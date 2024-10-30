@@ -1,86 +1,156 @@
-class NodoArvore:
+class Nodotree:
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
 
-class ArvoreBinaria:
+class BinaryTree:
     def __init__(self):
-        self.raiz = None
+        self.root = None
+        self.leaves = 0
 
-    def insertRoot(self, value):
-        if self.raiz is None:
-            self.raiz = NodoArvore(value)
+    def insert(self, value):
+        if self.root is None:
+            self.leaves += 1
+            self.root = Nodotree(value)
         else:
-            self.insertLeaf(value, self.raiz)
+            self.insertLeaf(value, self.root)
 
     def insertLeaf(self, value, root):
         if value < root.value:
             if root.left is None:
-                root.left = NodoArvore(value)
+                self.leaves += 1
+                root.left = Nodotree(value)
             else:
                 self.insertLeaf(value, root.left)
         elif value > root.value:
             if root.right is None:
-                root.right = NodoArvore(value)
+                self.leaves += 1
+                root.right = Nodotree(value)
             else:
                 self.insertLeaf(value, root.right)
 
-    def search(self, value, root=None):
-        if root is None:
-            root = self.raiz
-        if root.value == value:
-            return root
-        elif value < root.value:
-            return self.search(value, root.left)
+    def search(self, value, root=None, count=0):
+        if self.leaves > count:
+            if root is None:
+                root = self.root
+            if root.value == value:
+                return root
+            elif value < root.value:
+                return self.search(value, root.left, count = count+1)
+            elif value > root.value:
+                return self.search(value, root.right, count = count+1)
         else:
-            return self.search(value, root.right)
+            False
 
-    def path(self, tipo_caminhamento="central"):
-        if tipo_caminhamento == "central":
-            self.center(self.raiz)
-        elif tipo_caminhamento == "pre":
-            self.pre_fixed(self.raiz)
-        elif tipo_caminhamento == "pos":
-            self.pos_fixed(self.raiz)
+    def searchFather(self, value, root=None, count=0):
+        if self.leaves > count:
+            if root is None:
+                root = self.root
+            if root.left and root.left.value == value:
+                return root
+            elif root.right and root.right.value == value:
+                return root
+            elif value < root.value:
+                return self.searchFather(value, root.left, count = count+1)
+            elif value > root.value:
+                return self.searchFather(value, root.right, count = count+1)
         else:
-            print("Tipo de caminhamento inválido")
+            False
 
-    def center(self, root):
+    def delete(self, value, root=None):
+        if self.searchFather(value):
+            father = self.searchFather(value)
+            if father.right.value == value:
+                print(father.right.value)
+                father.right.value == None
+            elif father.left.value == value:
+                print(father.left.value)
+                father.left.value == None  
+        else:
+            self.root = None
+
+    def path(self, tipo_caminhamento="infixLeft"):
+        if tipo_caminhamento == "infixLeft":
+            self.infixLeft(self.root)
+        elif tipo_caminhamento == "preFixLeft":
+            self.preFixLeft(self.root)
+        elif tipo_caminhamento == "posFixLeft":
+            self.posFixLeft(self.root)
+        elif tipo_caminhamento == "infixRight":
+            self.infixRight(self.root)
+        elif tipo_caminhamento == "preFixRight":
+            self.preFixRight(self.root)
+        elif tipo_caminhamento == "posFixRight":
+            self.posFixRight(self.root)
+
+    def infixLeft(self, root):
         if root is not None:
-            self.center(root.left)
+            self.infixLeft(root.left)
             print(root.value, end=" ")
-            self.center(root.right)
+            self.infixLeft(root.right)
 
-    def pre_fixed(self, root):
+    def preFixLeft(self, root):
         if root is not None:
             print(root.value, end=" ")
-            self.pre_fixed(root.left)
-            self.pre_fixed(root.right)
+            self.preFixLeft(root.left)
+            self.preFixLeft(root.right)
 
-    def pos_fixed(self, root):
+    def posFixLeft(self, root):
         if root is not None:
-            self.pos_fixed(root.left)
-            self.pos_fixed(root.right)
+            self.posFixLeft(root.left)
+            self.posFixLeft(root.right)
             print(root.value, end=" ")
 
-arvore = ArvoreBinaria()
+    def infixRight(self, root):
+        if root is not None:
+            self.infixRight(root.right)
+            print(root.value, end=" ")
+            self.infixRight(root.left)
+
+    def preFixRight(self, root):
+        if root is not None:
+            print(root.value, end=" ")
+            self.preFixRight(root.right)
+            self.preFixRight(root.left)
+
+    def posFixRight(self, root):
+        if root is not None:
+            self.posFixRight(root.right)
+            self.posFixRight(root.left)
+            print(root.value, end=" ")
+
+tree = BinaryTree()
     
-arvore.insertRoot(50)
-arvore.insertRoot(10)
-arvore.insertRoot(60)
-arvore.insertRoot(20)
+tree.insert(50)
+tree.insert(10)
+tree.insert(30)
+tree.insert(60)
+tree.insert(20)
     
-print("Caminhamento central:")
-arvore.path("central")
+print("Caminho infixado a esquerda:")
+tree.path("infixLeft")
     
-print("\nCaminhamento pré-fixado:")
-arvore.path("pre")
+print("\nCaminho pré-fixado a esquerda:")
+tree.path("preFixLeft")
     
-print("\nCaminhamento pós-fixado:")
-arvore.path("pos")
+print("\nCaminho pós-fixado a esquerda:")
+tree.path("posFixLeft")
+
+print("\nCaminho infixado a direita:")
+tree.path("infixRight")
     
-print("\nBusca:")
-print(arvore.search(20).value)
+print("\nCaminho pré-fixado a direita:")
+tree.path("preFixRight")
     
+print("\nCaminho pós-fixado a direita:")
+tree.path("posFixRight")
     
+print("\nBusca:", tree.search(2))   
+
+print("\nBusca pai:", tree.searchFather(60).value)    
+
+tree.delete(60)
+
+print("\nCaminho pós-fixado a direita:")
+tree.path("posFixRight")
